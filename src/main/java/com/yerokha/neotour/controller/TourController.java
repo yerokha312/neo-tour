@@ -1,5 +1,6 @@
 package com.yerokha.neotour.controller;
 
+import com.yerokha.neotour.dto.CreateTourDto;
 import com.yerokha.neotour.dto.TourDto;
 import com.yerokha.neotour.dto.TourDtoFromList;
 import com.yerokha.neotour.entity.Tour;
@@ -30,8 +31,8 @@ public class TourController {
 
     @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addTour(@RequestBody Tour tour) {
-        tourService.addTour(tour);
+    public void addTour(@RequestBody CreateTourDto dto) {
+        tourService.addTour(dto);
     }
 
     @GetMapping("/{id}")
@@ -50,7 +51,7 @@ public class TourController {
     }
 
     @GetMapping("/recommended/{month}")
-    public ResponseEntity<Page<TourDtoFromList>> getRecommendedTours(@PathVariable String month) {
+    public ResponseEntity<Page<TourDtoFromList>> getRecommendedTours(@PathVariable int month) {
         return ResponseEntity.ok(tourService.getRecommendedTours(month));
     }
 

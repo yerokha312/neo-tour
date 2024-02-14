@@ -1,11 +1,12 @@
 package com.yerokha.neotour.service;
 
+import com.yerokha.neotour.dto.CreateTourDto;
 import com.yerokha.neotour.dto.TourDto;
 import com.yerokha.neotour.dto.TourDtoFromList;
-import com.yerokha.neotour.entity.Month;
 import com.yerokha.neotour.entity.Tour;
 import com.yerokha.neotour.exception.NotFoundException;
 import com.yerokha.neotour.repository.TourRepository;
+import com.yerokha.neotour.util.Months;
 import com.yerokha.neotour.util.TourMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,16 @@ public class TourService {
         this.tourRepository = tourRepository;
     }
 
-    public void addTour(Tour tour) {
+    public void addTour(CreateTourDto dto) {
+        Tour tour = TourMapper.fromDto(dto);
+        int months = 0;
+        if (dto.months() != null) {
+            for (int month : dto.months()) {
+                months |= Months.ALL_ARR[month - 1];
+            }
+        }
+
+        tour.setRecommendedMonths(months);
         tourRepository.save(tour);
     }
 
@@ -45,9 +55,12 @@ public class TourService {
                 .map(TourMapper::tourDtoFromList).collect(Collectors.toList());
     }
 
-    public Page<TourDtoFromList> getRecommendedTours(String month) {
-        return tourRepository.findAllMonthOrderByBookingCountDesc(Month.valueOf(month), Pageable.ofSize(PAGE_SIZE))
+    public Page<TourDtoFromList> getRecommendedTours(int month) {
+        int monthMask = Months.ALL_ARR[month - 1];
+
+        return tourRepository.findRecommendedTours(monthMask, Pageable.ofSize(PAGE_SIZE))
                 .map(TourMapper::tourDtoFromList);
+
     }
 
     public void updateTour(Tour tour) {
@@ -57,9 +70,4 @@ public class TourService {
     public void deleteTourById(Long id) {
         tourRepository.deleteById(id);
     }
-
-//
-//    public Iterable<Tour> getToursByCountry(String country) {
-//        return tourRepository.findAllByCountry(country);
-//    }
 }
