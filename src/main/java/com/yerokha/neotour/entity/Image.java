@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -23,4 +25,8 @@ public class Image {
 
     @Column(name = "image_name")
     private String imageName;
+
+    @ManyToOne
+    @JoinColumn(name = "tour_id")
+    private Tour tour;
 }
