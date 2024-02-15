@@ -1,5 +1,6 @@
 package com.yerokha.neotour.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yerokha.neotour.dto.CreateTourDto;
 import com.yerokha.neotour.dto.TourDto;
 import com.yerokha.neotour.dto.TourDtoFromList;
@@ -11,7 +12,9 @@ import com.yerokha.neotour.util.TourMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,12 +23,16 @@ public class TourService {
 
     private static final int PAGE_SIZE = 12;
     private final TourRepository tourRepository;
+    private final ImageService imageService;
 
-    public TourService(TourRepository tourRepository) {
+    public TourService(TourRepository tourRepository, ImageService imageService) {
         this.tourRepository = tourRepository;
+        this.imageService = imageService;
     }
 
-    public void addTour(CreateTourDto dto) {
+    public void addTour(String json, List<MultipartFile> images) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        CreateTourDto dto = mapper.readValue(json, CreateTourDto.class);
         Tour tour = TourMapper.fromDto(dto);
         int months = 0;
         if (dto.months() != null) {
@@ -35,6 +42,9 @@ public class TourService {
         }
 
         tour.setRecommendedMonths(months);
+        for (MultipartFile image : images) {
+            tour.addImage(imageService.processImage(image));
+        }
         tourRepository.save(tour);
     }
 

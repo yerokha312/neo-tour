@@ -17,6 +17,5 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
     @Query("SELECT t FROM Tour t WHERE BITAND(t.recommendedMonths, :monthMask) > 0")
     Page<Tour> findRecommendedTours(int monthMask, Pageable pageable);
 
-//    Page<Tour> findAllMonthOrderByBookingCountDesc(List<Month> season, Pageable pageable);
 
 }

@@ -1,6 +1,5 @@
 package com.yerokha.neotour.controller;
 
-import com.yerokha.neotour.dto.CreateTourDto;
 import com.yerokha.neotour.dto.TourDto;
 import com.yerokha.neotour.dto.TourDtoFromList;
 import com.yerokha.neotour.entity.Tour;
@@ -15,9 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -30,11 +32,11 @@ public class TourController {
         this.tourService = tourService;
     }
 
-    @PostMapping("/")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Hidden
-    public void addTour(@RequestBody CreateTourDto dto) {
-        tourService.addTour(dto);
+    public void addTour(@RequestPart String dto, @RequestPart("images") List<MultipartFile> images) throws IOException {
+        tourService.addTour(dto, images);
     }
 
     @GetMapping("/{id}")
@@ -57,7 +59,7 @@ public class TourController {
         return ResponseEntity.ok(tourService.getRecommendedTours(month));
     }
 
-    @PutMapping("/")
+    @PutMapping
     @Hidden
     public void updateTour(@RequestBody Tour tour) {
         tourService.updateTour(tour);

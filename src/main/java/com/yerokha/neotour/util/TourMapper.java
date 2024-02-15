@@ -3,6 +3,8 @@ package com.yerokha.neotour.util;
 import com.yerokha.neotour.dto.CreateTourDto;
 import com.yerokha.neotour.dto.TourDto;
 import com.yerokha.neotour.dto.TourDtoFromList;
+import com.yerokha.neotour.entity.Image;
+import com.yerokha.neotour.entity.Location;
 import com.yerokha.neotour.entity.Tour;
 
 public class TourMapper {
@@ -11,9 +13,10 @@ public class TourMapper {
         return new TourDto(
                 tour.getId(),
                 tour.getName(),
-                tour.getLocation(),
+                tour.getLocation().getLocality(),
+                tour.getLocation().getCountry(),
                 tour.getDescription(),
-                tour.getImages(),
+                tour.getImages().stream().map(Image::getImageUrl).toList(),
                 tour.getReviews().stream().map(ReviewMapper::toDto).toList()
         );
     }
@@ -21,7 +24,7 @@ public class TourMapper {
     public static TourDtoFromList tourDtoFromList(Tour tour) {
         return new TourDtoFromList(
                 tour.getId(),
-                tour.getImages().get(0),
+                tour.getImages().get(0).getImageUrl(),
                 tour.getName()
         );
     }
@@ -30,9 +33,8 @@ public class TourMapper {
         Tour tour = new Tour();
 
         tour.setName(dto.name());
-        tour.setLocation(dto.location());
+        tour.setLocation(new Location(dto.locality(), dto.country(), dto.continent()));
         tour.setDescription(dto.description());
-        tour.setImages(dto.images());
 
         return tour;
     }
