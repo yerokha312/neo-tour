@@ -1,5 +1,6 @@
 package com.yerokha.neotour.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yerokha.neotour.dto.CreateTourDto;
 import com.yerokha.neotour.dto.TourDto;
@@ -12,9 +13,9 @@ import com.yerokha.neotour.util.TourMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,9 +31,14 @@ public class TourService {
         this.imageService = imageService;
     }
 
-    public void addTour(String json, List<MultipartFile> images) throws IOException {
+    public void addTour(String json, List<MultipartFile> images) {
         ObjectMapper mapper = new ObjectMapper();
-        CreateTourDto dto = mapper.readValue(json, CreateTourDto.class);
+        CreateTourDto dto;
+        try {
+            dto = mapper.readValue(json, CreateTourDto.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         Tour tour = TourMapper.fromDto(dto);
         int months = 0;
         if (dto.months() != null) {
@@ -47,11 +53,10 @@ public class TourService {
         }
         tourRepository.save(tour);
     }
-
+    @Transactional
     public TourDto getTourById(Long id) {
         Tour tour = tourRepository.findById(id).orElseThrow(NotFoundException::new);
-        tour.setViewCount(tour.getViewCount() + 1);
-        tourRepository.save(tour);
+        tourRepository.incrementViewCount(id);
         return TourMapper.toDto(tour);
     }
 

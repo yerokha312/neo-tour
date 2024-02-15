@@ -25,19 +25,19 @@ public class ImageService {
     }
 
     private Image saveImage(MultipartFile file) {
-        try {
-            String imageUrl = uploadImage(file);
-            Image image = new Image();
-            image.setImageUrl(imageUrl);
-            image.setImageName(file.getOriginalFilename());
-            return imageRepository.save(image);
-        } catch (IOException e) {
-            return null;
-        }
+        String imageUrl = uploadImage(file);
+        Image image = new Image();
+        image.setImageUrl(imageUrl);
+        image.setImageName(file.getOriginalFilename());
+        return imageRepository.save(image);
     }
 
-    private String uploadImage(MultipartFile image) throws IOException {
-        return cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap()).get("url").toString();
+    private String uploadImage(MultipartFile image) {
+        try {
+            return cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap()).get("url").toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 
