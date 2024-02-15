@@ -1,14 +1,11 @@
 package com.yerokha.neotour.dto;
 
-import com.yerokha.neotour.entity.Image;
-
-import java.util.List;
-
 public record CreateTourDto(
         String name,
-        String location,
+        String locality,
+        String country,
+        String continent,
         int[] months,
-        String description,
-        List<Image> images
+        String description
 ) {
 }
