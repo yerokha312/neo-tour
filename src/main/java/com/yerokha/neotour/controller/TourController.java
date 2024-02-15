@@ -5,6 +5,7 @@ import com.yerokha.neotour.dto.TourDto;
 import com.yerokha.neotour.dto.TourDtoFromList;
 import com.yerokha.neotour.entity.Tour;
 import com.yerokha.neotour.service.TourService;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ public class TourController {
 
     @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
+    @Hidden
     public void addTour(@RequestBody CreateTourDto dto) {
         tourService.addTour(dto);
     }
@@ -56,6 +58,7 @@ public class TourController {
     }
 
     @PutMapping("/")
+    @Hidden
     public void updateTour(@RequestBody Tour tour) {
         tourService.updateTour(tour);
     }
