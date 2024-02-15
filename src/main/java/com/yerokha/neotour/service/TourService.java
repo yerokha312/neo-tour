@@ -26,13 +26,14 @@ public class TourService {
     private final TourRepository tourRepository;
     private final ImageService imageService;
 
+    private final ObjectMapper mapper = new ObjectMapper();
+
     public TourService(TourRepository tourRepository, ImageService imageService) {
         this.tourRepository = tourRepository;
         this.imageService = imageService;
     }
 
     public void addTour(String json, List<MultipartFile> images) {
-        ObjectMapper mapper = new ObjectMapper();
         CreateTourDto dto;
         try {
             dto = mapper.readValue(json, CreateTourDto.class);

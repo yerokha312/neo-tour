@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -38,8 +39,14 @@ public class Tour {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "tour")
+    @OneToMany
+    @JoinTable(
+            name = "tour_image_junction",
+            joinColumns = @JoinColumn(name = "tour_id"),
+            inverseJoinColumns = @JoinColumn(name = "image_id")
+    )
     private List<Image> images;
+
 
     @OneToMany(mappedBy = "tour")
     private List<Review> reviews;
@@ -54,7 +61,6 @@ public class Tour {
         if (images == null) {
             images = new ArrayList<>();
         }
-        image.setTour(this);
         images.add(image);
     }
 
