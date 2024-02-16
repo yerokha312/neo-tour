@@ -15,12 +15,17 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
 
     List<Tour> findTop9ByOrderByBookingCountDesc();
 
+    List<Tour> findAllByLocation_Continent(String continent);
+
     @Query("SELECT t FROM Tour t WHERE BITAND(t.recommendedMonths, :monthMask) > 0")
     Page<Tour> findRecommendedTours(int monthMask, Pageable pageable);
 
     @Modifying
     @Query("UPDATE Tour t SET t.viewCount = t.viewCount + 1 WHERE t.id = :id")
     void incrementViewCount(Long id);
+
+    @Query("SELECT t FROM Tour t WHERE (t.isFeatured = true AND BITAND(t.recommendedMonths, :monthMask) > 0)")
+    List<Tour> findAllByFeaturedTrue(int monthMask);
 
 
 }

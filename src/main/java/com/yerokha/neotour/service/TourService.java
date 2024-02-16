@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class TourService {
@@ -54,28 +54,52 @@ public class TourService {
         }
         tourRepository.save(tour);
     }
+
     @Transactional
     public TourDto getTourById(Long id) {
         Tour tour = tourRepository.findById(id).orElseThrow(NotFoundException::new);
-        tourRepository.incrementViewCount(id);
+        incrementViewCount(id);
         return TourMapper.toDto(tour);
     }
 
-    public List<TourDtoFromList> getPopularTours() {
-        return tourRepository.findTop9ByOrderByViewCountDesc().stream()
-                .map(TourMapper::tourDtoFromList).collect(Collectors.toList());
+    @Transactional
+    protected void incrementViewCount(Long id) {
+        tourRepository.incrementViewCount(id);
     }
 
-    public List<TourDtoFromList> getMostVisitedTours() {
+    public List<TourDtoFromList> getTours(String param) {
+        return switch (param) {
+            case "popular" -> getPopularTours();
+            case "featured" -> getFeaturedTours();
+            case "visited" -> getMostVisitedTours();
+            default -> getToursByContinent(param);
+        };
+    }
+
+    private List<TourDtoFromList> getPopularTours() {
+        return tourRepository.findTop9ByOrderByViewCountDesc().stream()
+                .map(TourMapper::toTourDtoFromList).toList();
+    }
+
+    private List<TourDtoFromList> getFeaturedTours() {
+        return tourRepository.findAllByFeaturedTrue(Months.ALL_ARR[LocalDate.now().getMonthValue() - 1]).stream().map(TourMapper::toTourDtoFromList).toList();
+    }
+
+    private List<TourDtoFromList> getMostVisitedTours() {
         return tourRepository.findTop9ByOrderByBookingCountDesc().stream()
-                .map(TourMapper::tourDtoFromList).collect(Collectors.toList());
+                .map(TourMapper::toTourDtoFromList).toList();
+    }
+
+    private List<TourDtoFromList> getToursByContinent(String continent) {
+        return tourRepository.findAllByLocation_Continent(continent).stream()
+                .map(TourMapper::toTourDtoFromList).toList();
     }
 
     public Page<TourDtoFromList> getRecommendedTours(int month) {
         int monthMask = Months.ALL_ARR[month - 1];
 
         return tourRepository.findRecommendedTours(monthMask, Pageable.ofSize(PAGE_SIZE))
-                .map(TourMapper::tourDtoFromList);
+                .map(TourMapper::toTourDtoFromList);
 
     }
 

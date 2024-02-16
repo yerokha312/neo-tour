@@ -51,6 +51,9 @@ public class Tour {
     @OneToMany(mappedBy = "tour")
     private List<Review> reviews;
 
+    @Column(name = "is_featured")
+    private boolean isFeatured;
+
     @Column(name = "booking_count")
     private long bookingCount;
 

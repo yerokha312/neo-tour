@@ -6,6 +6,7 @@ public record CreateTourDto(
         String country,
         String continent,
         int[] months,
-        String description
+        String description,
+        boolean isFeatured
 ) {
 }

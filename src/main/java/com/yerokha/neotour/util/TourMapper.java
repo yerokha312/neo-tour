@@ -21,7 +21,7 @@ public class TourMapper {
         );
     }
 
-    public static TourDtoFromList tourDtoFromList(Tour tour) {
+    public static TourDtoFromList toTourDtoFromList(Tour tour) {
         return new TourDtoFromList(
                 tour.getId(),
                 tour.getImages().get(0).getImageUrl(),
@@ -35,6 +35,7 @@ public class TourMapper {
         tour.setName(dto.name());
         tour.setLocation(new Location(dto.locality(), dto.country(), dto.continent()));
         tour.setDescription(dto.description());
+        tour.setFeatured(dto.isFeatured());
 
         return tour;
     }

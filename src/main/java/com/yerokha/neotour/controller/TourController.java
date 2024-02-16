@@ -8,12 +8,14 @@ import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,14 +45,9 @@ public class TourController {
         return ResponseEntity.ok(tourService.getTourById(id));
     }
 
-    @GetMapping("/popular")
-    public ResponseEntity<List<TourDtoFromList>> get9PopularTours() {
-        return ResponseEntity.ok(tourService.getPopularTours());
-    }
-
-    @GetMapping("/most-visited")
-    public ResponseEntity<List<TourDtoFromList>> getMostVisitedTours() {
-        return ResponseEntity.ok(tourService.getMostVisitedTours());
+    @GetMapping
+    public ResponseEntity<List<TourDtoFromList>> getTours(@RequestParam("param") String param) {
+        return ResponseEntity.ok(tourService.getTours(param));
     }
 
     @GetMapping("/recommended/{month}")
@@ -62,5 +59,10 @@ public class TourController {
     @Hidden
     public void updateTour(@RequestBody Tour tour) {
         tourService.updateTour(tour);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteTour(@PathVariable Long id) {
+        tourService.deleteTourById(id);
     }
 }

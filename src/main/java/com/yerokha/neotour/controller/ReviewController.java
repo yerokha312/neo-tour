@@ -26,7 +26,7 @@ public class ReviewController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void addReview(@RequestPart String dto, @RequestPart("image")MultipartFile image) {
+    public void addReview(@RequestPart String dto, @RequestPart("image") MultipartFile image) {
         reviewService.addReview(dto, image);
     }
 
