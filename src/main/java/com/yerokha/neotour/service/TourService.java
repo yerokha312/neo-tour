@@ -67,6 +67,11 @@ public class TourService {
         tourRepository.incrementViewCount(id);
     }
 
+    @Transactional
+    protected void incrementBookingCount(Long tourId) {
+        tourRepository.incrementBookingCount(tourId);
+    }
+
     public List<TourDtoFromList> getTours(String param) {
         return switch (param) {
             case "popular" -> getPopularTours();

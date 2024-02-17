@@ -10,7 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "booking")
@@ -27,13 +27,13 @@ public class Booking {
     private Tour tour;
 
     @Column(name = "booking_date")
-    private LocalDate bookingDate;
+    private LocalDateTime bookingDate;
 
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "number_of_participants")
-    private int numberOfParticipants;
+    @Column(name = "people_count")
+    private int peopleCount;
 
     @Column(name = "comment", length = 300)
     private String comment;

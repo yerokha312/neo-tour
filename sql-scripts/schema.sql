@@ -18,7 +18,7 @@ create table location
 create table tour
 (
     tour_id            bigserial,
-    tour_name               varchar(255),
+    tour_name          varchar(255),
     location_id        bigint,
     recommended_months integer,
     description        varchar(1000),
@@ -32,12 +32,12 @@ create table tour
 
 create table booking
 (
-    booking_id             bigserial,
-    tour_id                bigint,
-    booking_date                   date,
-    phone_number           varchar(255),
-    number_of_participants integer,
-    comment                varchar(300),
+    booking_id   bigserial,
+    tour_id      bigint,
+    booking_date date,
+    phone_number varchar(255),
+    people_count integer,
+    comment      varchar(300),
     primary key (booking_id),
     constraint fklc7bhi14w8e558dt15eofelm4
         foreign key (tour_id) references tour
@@ -45,12 +45,12 @@ create table booking
 
 create table review
 (
-    review_id bigserial,
-    tour_id   bigint,
-    review_date      date,
-    author    varchar(255),
-    image_id  bigint,
-    body      varchar(500),
+    review_id   bigserial,
+    tour_id     bigint,
+    review_date date,
+    author      varchar(255),
+    image_id    bigint,
+    body        varchar(500),
     primary key (review_id),
     constraint uk_c6cgb1awbhkdhsvgykdx8ikq3
         unique (image_id),
