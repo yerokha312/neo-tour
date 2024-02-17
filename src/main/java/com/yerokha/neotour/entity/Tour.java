@@ -26,8 +26,8 @@ public class Tour {
     @Column(name = "tour_id")
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "tour_name")
+    private String tourName;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "location_id")
@@ -36,7 +36,7 @@ public class Tour {
     @Column(name = "recommended_months")
     private int recommendedMonths;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 1000)
     private String description;
 
     @OneToMany

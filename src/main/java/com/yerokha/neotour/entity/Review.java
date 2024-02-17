@@ -27,8 +27,8 @@ public class Review {
     @JoinColumn(name = "tour_id")
     private Tour tour;
 
-    @Column(name = "date")
-    private LocalDate date;
+    @Column(name = "review_date")
+    private LocalDate reviewDate;
 
     @Column(name = "author")
     private String author;
@@ -37,6 +37,6 @@ public class Review {
     @JoinColumn(name = "image_id")
     private Image profilePicture;
 
-    @Column(name = "text")
-    private String text;
+    @Column(name = "body", length = 500)
+    private String body;
 }

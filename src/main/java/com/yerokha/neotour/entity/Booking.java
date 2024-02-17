@@ -26,8 +26,8 @@ public class Booking {
     @JoinColumn(name = "tour_id")
     private Tour tour;
 
-    @Column(name = "date")
-    private LocalDate date;
+    @Column(name = "booking_date")
+    private LocalDate bookingDate;
 
     @Column(name = "phone_number")
     private String phoneNumber;
@@ -35,7 +35,7 @@ public class Booking {
     @Column(name = "number_of_participants")
     private int numberOfParticipants;
 
-    @Column(name = "comment")
+    @Column(name = "comment", length = 300)
     private String comment;
 }
 

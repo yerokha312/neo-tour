@@ -12,7 +12,7 @@ public class TourMapper {
     public static TourDto toDto(Tour tour) {
         return new TourDto(
                 tour.getId(),
-                tour.getName(),
+                tour.getTourName(),
                 tour.getLocation().getLocality(),
                 tour.getLocation().getCountry(),
                 tour.getDescription(),
@@ -25,14 +25,14 @@ public class TourMapper {
         return new TourDtoFromList(
                 tour.getId(),
                 tour.getImages().get(0).getImageUrl(),
-                tour.getName()
+                tour.getTourName()
         );
     }
 
     public static Tour fromDto(CreateTourDto dto) {
         Tour tour = new Tour();
 
-        tour.setName(dto.name());
+        tour.setTourName(dto.name());
         tour.setLocation(new Location(dto.locality(), dto.country(), dto.continent()));
         tour.setDescription(dto.description());
         tour.setFeatured(dto.isFeatured());

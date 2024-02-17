@@ -12,16 +12,16 @@ public class ReviewMapper {
         return new ReviewDto(
                 review.getAuthor(),
                 review.getProfilePicture().getImageUrl(),
-                review.getDate(),
-                review.getText()
+                review.getReviewDate(),
+                review.getBody()
         );
     }
 
     public static Review fromDto(CreateReviewDto dto) {
         Review review = new Review();
         review.setAuthor(dto.author());
-        review.setDate(LocalDate.now());
-        review.setText(dto.text());
+        review.setReviewDate(LocalDate.now());
+        review.setBody(dto.text());
 
         return review;
     }
