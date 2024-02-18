@@ -10,14 +10,13 @@ import com.yerokha.neotour.repository.ReviewRepository;
 import com.yerokha.neotour.repository.TourRepository;
 import com.yerokha.neotour.util.ReviewMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ReviewService {
 
-    private static final int PAGE_SIZE = 10;
     private final ReviewRepository reviewRepository;
     private final TourRepository tourRepository;
     private final ImageService imageService;
@@ -45,7 +44,10 @@ public class ReviewService {
         reviewRepository.save(review);
     }
 
-    public Page<ReviewDto> getReviewsByTourId(Long tourId) {
-        return reviewRepository.findAllByTour_Id(tourId, Pageable.ofSize(PAGE_SIZE)).map(ReviewMapper::toDto);
+    public Page<ReviewDto> getReviewsByTourId(Long tourId, int page, int size) {
+        if (!tourRepository.existsById(tourId)) {
+            throw new NotFoundException();
+        }
+        return reviewRepository.findAllByTour_Id(tourId, PageRequest.of(page, size)).map(ReviewMapper::toDto);
     }
 }

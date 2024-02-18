@@ -7,21 +7,20 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
-
 public interface TourRepository extends JpaRepository<Tour, Long> {
 
-    List<Tour> findTop9ByOrderByViewCountDesc();
+    Page<Tour> findAllByOrderByViewCountDesc(Pageable pageable);
 
-    List<Tour> findTop9ByOrderByBookingCountDesc();
+    Page<Tour> findAllByOrderByBookingCountDesc(Pageable pageable);
 
-    List<Tour> findAllByLocation_Continent(String continent);
+    @Query("SELECT t FROM Tour t WHERE LOWER(t.location.continent) = LOWER(:continent)")
+    Page<Tour> findAllByLocation_Continent(String continent, Pageable pageable);
 
     @Query("SELECT t FROM Tour t WHERE BITAND(t.recommendedMonths, :monthMask) > 0")
     Page<Tour> findRecommendedTours(int monthMask, Pageable pageable);
 
     @Query("SELECT t FROM Tour t WHERE (t.isFeatured = true AND BITAND(t.recommendedMonths, :monthMask) > 0)")
-    List<Tour> findAllByFeaturedTrue(int monthMask);
+    Page<Tour> findAllByFeaturedTrue(int monthMask, Pageable pageable);
 
     @Modifying
     @Query("UPDATE Tour t SET t.viewCount = t.viewCount + 1 WHERE t.id = :id")
