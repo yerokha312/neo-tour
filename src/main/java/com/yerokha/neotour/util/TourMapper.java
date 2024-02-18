@@ -17,7 +17,7 @@ public class TourMapper {
                 tour.getLocation().getCountry(),
                 tour.getDescription(),
                 tour.getImages().stream().map(Image::getImageUrl).toList(),
-                tour.getReviews().stream().map(ReviewMapper::toDto).toList()
+                tour.getReviews().stream().map(ReviewMapper::toDto).limit(3).toList()
         );
     }
 

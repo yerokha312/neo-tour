@@ -2,6 +2,11 @@ package com.yerokha.neotour.controller;
 
 import com.yerokha.neotour.dto.CreateBookingDto;
 import com.yerokha.neotour.service.BookingService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/bookings")
+@Tag(name = "Booking", description = "Controller for creating bookings")
 public class BookingController {
 
     private final BookingService bookingService;
@@ -21,7 +27,17 @@ public class BookingController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void addBooking(@RequestBody CreateBookingDto dto) {
+    @Operation(
+            summary = "Add a new booking",
+            description = "Add a new booking to the database",
+            tags = {"booking", "post"},
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Booking added successfully",
+                            content = @Content),
+                    @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
+            }
+    )
+    public void addBooking(@RequestBody @Valid CreateBookingDto dto) {
         bookingService.addBooking(dto);
     }
 }
