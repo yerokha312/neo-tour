@@ -103,7 +103,7 @@ public class TourService {
 
     public Page<TourDtoFromList> getRecommendedTours(int month, int page, int size) {
         if (month < 1 || month > 12) {
-            throw new IllegalArgumentException("Month must be between 1 and 12");
+            month = LocalDate.now().getMonthValue();
         }
 
         int monthMask = Months.ALL_ARR[month - 1];
