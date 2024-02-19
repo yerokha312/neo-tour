@@ -1,5 +1,7 @@
 package com.yerokha.neotour.util;
 
+import java.time.LocalDate;
+
 public class Months {
 
     public static final int JAN = 1 << 0;
@@ -15,9 +17,10 @@ public class Months {
     public static final int NOV = 1 << 10;
     public static final int DEC = 1 << 11;
 
-    public static final int[] ALL_ARR = {JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG,
+    public static final int[] ALL = {JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG,
             SEP, OCT, NOV, DEC};
 
-    public static final int ALL = JAN | FEB | MAR | APR | MAY | JUN |
-            JUL | AUG | SEP | OCT | NOV | DEC;
+    public static int getCurrentMonthMask() {
+        return ALL[LocalDate.now().getMonthValue() - 1];
+    }
 }

@@ -12,11 +12,11 @@ import com.yerokha.neotour.util.Months;
 import com.yerokha.neotour.util.TourMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -43,7 +43,7 @@ public class TourService {
         int months = 0;
         if (dto.months() != null) {
             for (int month : dto.months()) {
-                months |= Months.ALL_ARR[month - 1];
+                months |= Months.ALL[month - 1];
             }
         }
 
@@ -72,43 +72,40 @@ public class TourService {
     }
 
     public Page<TourDtoFromList> getTours(String param, int page, int size) {
+        if (page < 0 || size < 1) {
+            throw new IllegalArgumentException("Page page or size");
+        }
+        Pageable pageable = PageRequest.of(page, size);
         return switch (param) {
-            case "popular" -> getPopularTours(page, size);
-            case "featured" -> getFeaturedTours(page, size);
-            case "visited" -> getMostVisitedTours(page, size);
-            default -> getToursByContinent(param, page, size);
+            case "popular" -> getPopularTours(pageable);
+            case "featured" -> getFeaturedTours(pageable);
+            case "visited" -> getMostVisitedTours(pageable);
+            default -> getToursByContinent(param, pageable);
         };
     }
 
-    private Page<TourDtoFromList> getPopularTours(int page, int size) {
-        return tourRepository.findAllByOrderByViewCountDesc(PageRequest.of(page, size))
+    private Page<TourDtoFromList> getPopularTours(Pageable pageable) {
+        return tourRepository.findAllByOrderByViewCountDesc(pageable)
                 .map(TourMapper::toTourDtoFromList);
     }
 
-    private Page<TourDtoFromList> getFeaturedTours(int page, int size) {
-        return tourRepository.findAllByFeaturedTrue(Months.ALL_ARR[LocalDate.now().getMonthValue() - 1],
-                        PageRequest.of(page, size))
+    private Page<TourDtoFromList> getFeaturedTours(Pageable pageable) {
+        return tourRepository.findAllByFeaturedTrue(Months.getCurrentMonthMask(), pageable)
                 .map(TourMapper::toTourDtoFromList);
     }
 
-    private Page<TourDtoFromList> getMostVisitedTours(int page, int size) {
-        return tourRepository.findAllByOrderByBookingCountDesc(PageRequest.of(page, size))
+    private Page<TourDtoFromList> getMostVisitedTours(Pageable pageable) {
+        return tourRepository.findAllByOrderByBookingCountDesc(pageable)
                 .map(TourMapper::toTourDtoFromList);
     }
 
-    private Page<TourDtoFromList> getToursByContinent(String continent, int page, int size) {
-        return tourRepository.findAllByLocation_Continent(continent, PageRequest.of(page, size))
+    private Page<TourDtoFromList> getToursByContinent(String continent, Pageable pageable) {
+        return tourRepository.findAllByLocation_Continent(continent, pageable)
                 .map(TourMapper::toTourDtoFromList);
     }
 
     public Page<TourDtoFromList> getRecommendedTours(int month, int page, int size) {
-        if (month < 1 || month > 12) {
-            month = LocalDate.now().getMonthValue();
-        }
-
-        int monthMask = Months.ALL_ARR[month - 1];
-
-        return tourRepository.findRecommendedTours(monthMask, PageRequest.of(page, size))
+        return tourRepository.findRecommendedTours(Months.getCurrentMonthMask(), PageRequest.of(page, size))
                 .map(TourMapper::toTourDtoFromList);
 
     }
