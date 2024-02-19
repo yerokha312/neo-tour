@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -105,7 +106,13 @@ public class TourService {
     }
 
     public Page<TourDtoFromList> getRecommendedTours(int month, int page, int size) {
-        return tourRepository.findRecommendedTours(Months.getCurrentMonthMask(), PageRequest.of(page, size))
+        if (month < 1 || month > 12) {
+            month = LocalDate.now().getMonthValue();
+        }
+
+        int monthMask = Months.ALL[month - 1];
+
+        return tourRepository.findRecommendedTours(monthMask, PageRequest.of(page, size))
                 .map(TourMapper::toTourDtoFromList);
 
     }
