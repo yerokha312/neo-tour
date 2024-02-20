@@ -60,6 +60,7 @@ public class TourController {
             }
     )
     public ResponseEntity<TourDto> getTourById(@PathVariable Long id) {
+        tourService.incrementViewCount(id);
         return ResponseEntity.ok(tourService.getTourById(id));
     }
 

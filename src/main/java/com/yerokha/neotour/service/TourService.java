@@ -56,15 +56,14 @@ public class TourService {
         tourRepository.save(tour);
     }
 
-    @Transactional
+    @Cacheable(value = "tourDetailsCache", key = "#id")
     public TourDto getTourById(Long id) {
         Tour tour = tourRepository.findById(id).orElseThrow(NotFoundException::new);
-        incrementViewCount(id);
         return TourMapper.toDto(tour);
     }
 
     @Transactional
-    protected void incrementViewCount(Long id) {
+    public void incrementViewCount(Long id) {
         tourRepository.incrementViewCount(id);
     }
 
