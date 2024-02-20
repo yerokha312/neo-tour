@@ -13,7 +13,11 @@ public class CacheConfig {
 
     @Bean
     public CacheManager cacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager("discoverToursCache", "recommendedToursCache");
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager(
+                "discoverToursCache",
+                "recommendedToursCache",
+                "tourDetailsCache");
+
         cacheManager.setCaffeineSpec(CaffeineSpec.parse("maximumSize=100, expireAfterWrite=30m"));
         return cacheManager;
     }
