@@ -11,8 +11,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -93,7 +91,7 @@ public class TourController {
         return ResponseEntity.ok(tourService.getTours(param, page, size));
     }
 
-    @GetMapping("/recommended/{month}")
+    @GetMapping("/recommended")
     @Operation(
             summary = "Get recommended tours",
             description = "Get recommended tours for a given month",
@@ -123,7 +121,7 @@ public class TourController {
             }
     )
     public ResponseEntity<Page<TourDtoFromList>> getRecommendedTours(
-            @PathVariable @Min(1) @Max(12) int month,
+            @RequestParam(value = "month", required = false) Integer month,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "12") int size
     ) {

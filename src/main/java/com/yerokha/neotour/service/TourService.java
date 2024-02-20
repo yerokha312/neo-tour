@@ -107,8 +107,8 @@ public class TourService {
     }
 
     @Cacheable(value = "recommendedToursCache", key = "#month + '-' + #page + '-' + #size")
-    public Page<TourDtoFromList> getRecommendedTours(int month, int page, int size) {
-        if (month < 1 || month > 12) {
+    public Page<TourDtoFromList> getRecommendedTours(Integer month, int page, int size) {
+        if (month == null || month < 1 || month > 12) {
             month = LocalDate.now().getMonthValue();
         }
 
