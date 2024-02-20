@@ -10,6 +10,7 @@ import com.yerokha.neotour.exception.NotFoundException;
 import com.yerokha.neotour.repository.TourRepository;
 import com.yerokha.neotour.util.Months;
 import com.yerokha.neotour.util.TourMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -72,6 +73,7 @@ public class TourService {
         tourRepository.incrementBookingCount(tourId);
     }
 
+    @Cacheable(value = "discoverToursCache", key = "#param.concat('-').concat(#page).concat('-').concat(#size)")
     public Page<TourDtoFromList> getTours(String param, int page, int size) {
         if (page < 0 || size < 1) {
             throw new IllegalArgumentException("Page page or size");
@@ -105,6 +107,7 @@ public class TourService {
                 .map(TourMapper::toTourDtoFromList);
     }
 
+    @Cacheable(value = "recommendedToursCache", key = "#month + '-' + #page + '-' + #size")
     public Page<TourDtoFromList> getRecommendedTours(int month, int page, int size) {
         if (month < 1 || month > 12) {
             month = LocalDate.now().getMonthValue();
