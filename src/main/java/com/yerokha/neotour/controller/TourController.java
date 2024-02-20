@@ -141,4 +141,5 @@ public class TourController {
     public void deleteTour(@PathVariable Long id) {
         tourService.deleteTourById(id);
     }
+
 }
