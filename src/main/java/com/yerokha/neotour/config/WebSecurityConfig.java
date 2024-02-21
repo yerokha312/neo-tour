@@ -9,7 +9,6 @@ import com.nimbusds.jose.proc.SecurityContext;
 import com.yerokha.neotour.util.RSAKeyProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -28,10 +27,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
+import org.springframework.web.filter.CorsFilter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -59,47 +56,30 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://neotour.netlify.app", "http://localhost:37854"));
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-        configuration.setAllowCredentials(true);
+    public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("https://neotour.netlify.app");
+        config.addAllowedOrigin("http://localhost:37854");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+
     }
 
-
     @Bean
-    @Profile("dev")
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
+                .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v1/registration", "/v1/login").anonymous()
                         .requestMatchers(HttpMethod.GET, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/v1/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "v1/tours").hasRole("ADMIN")
-                        .anyRequest().hasRole("ADMIN"))
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(converter())))
-                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS));
-
-        return http.build();
-    }
-
-    @Bean
-    @Profile("prod")
-    public SecurityFilterChain filterChainProd(HttpSecurity http) throws Exception {
-
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/**").permitAll()
-                        .requestMatchers("/v1/registration", "/v1/login").anonymous()
                         .anyRequest().hasRole("ADMIN"))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(converter())))
