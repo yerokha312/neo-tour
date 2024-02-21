@@ -2,10 +2,12 @@ package com.yerokha.neotour.service;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -36,6 +38,17 @@ public class TokenService {
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();
+    }
+
+    public String getUsernameFromToken(String token) {
+
+        if (!token.startsWith("Bearer")) {
+            throw new InvalidBearerTokenException("Token is not a Bearer token");
+        }
+        String strippedToken = token.substring(7);
+        Jwt decoded = jwtDecoder.decode(strippedToken);
+
+        return decoded.getSubject();
     }
 }
 
