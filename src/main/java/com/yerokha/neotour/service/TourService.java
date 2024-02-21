@@ -75,7 +75,7 @@ public class TourService {
     @Cacheable(value = "discoverToursCache", key = "#param.concat('-').concat(#page).concat('-').concat(#size)")
     public Page<TourDtoFromList> getTours(String param, int page, int size) {
         if (page < 0 || size < 1) {
-            throw new IllegalArgumentException("Page page or size");
+            throw new IllegalArgumentException("Invalid page or size");
         }
         Pageable pageable = PageRequest.of(page, size);
         return switch (param) {
