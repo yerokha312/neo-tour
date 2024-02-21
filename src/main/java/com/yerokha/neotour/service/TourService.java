@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TourService {
@@ -72,16 +73,28 @@ public class TourService {
         tourRepository.incrementBookingCount(tourId);
     }
 
-    @Cacheable(value = "discoverToursCache", key = "#param.concat('-').concat(#page).concat('-').concat(#size)")
-    public Page<TourDtoFromList> getTours(String param, int page, int size) {
+    @Cacheable(value = "tourListsCache", key = "#params.hashCode()")
+    public Page<TourDtoFromList> getTours(Map<String, String> params) {
+        String param = params.get("param");
+        String pageStr = params.getOrDefault("page", "0");
+        String sizeStr = params.getOrDefault("size", "3");
+        String monthStr = params.get("month");
+
+        int page = Integer.parseInt(pageStr);
+        int size = Integer.parseInt(sizeStr);
+        int month = monthStr != null ? Integer.parseInt(monthStr) : LocalDate.now().getMonthValue();
+
         if (page < 0 || size < 1) {
             throw new IllegalArgumentException("Invalid page or size");
         }
+
         Pageable pageable = PageRequest.of(page, size);
+
         return switch (param) {
             case "popular" -> getPopularTours(pageable);
             case "featured" -> getFeaturedTours(pageable);
             case "visited" -> getMostVisitedTours(pageable);
+            case "recommended" -> getRecommendedTours(month, page);
             default -> getToursByContinent(param, pageable);
         };
     }
@@ -106,13 +119,14 @@ public class TourService {
                 .map(TourMapper::toTourDtoFromList);
     }
 
-    @Cacheable(value = "recommendedToursCache", key = "#month + '-' + #page + '-' + #size")
-    public Page<TourDtoFromList> getRecommendedTours(Integer month, int page, int size) {
+    private Page<TourDtoFromList> getRecommendedTours(Integer month, int page) {
         if (month == null || month < 1 || month > 12) {
             month = LocalDate.now().getMonthValue();
         }
 
         int monthMask = Months.ALL[month - 1];
+
+        int size = 12;
 
         return tourRepository.findRecommendedTours(monthMask, PageRequest.of(page, size))
                 .map(TourMapper::toTourDtoFromList);

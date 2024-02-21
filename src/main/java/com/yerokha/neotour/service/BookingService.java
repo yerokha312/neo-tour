@@ -5,6 +5,7 @@ import com.yerokha.neotour.entity.Booking;
 import com.yerokha.neotour.exception.NotFoundException;
 import com.yerokha.neotour.repository.BookingRepository;
 import com.yerokha.neotour.repository.TourRepository;
+import com.yerokha.neotour.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,18 +16,20 @@ public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final TourRepository tourRepository;
+    private final UserRepository userRepository;
 
-    public BookingService(BookingRepository bookingRepository, TourRepository tourRepository) {
+    public BookingService(BookingRepository bookingRepository, TourRepository tourRepository, UserRepository userRepository) {
         this.bookingRepository = bookingRepository;
         this.tourRepository = tourRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional
-    public void addBooking(CreateBookingDto dto) {
+    public void addBooking(CreateBookingDto dto, String username) {
         Booking booking = new Booking();
         booking.setTour(tourRepository.findById(dto.tourId()).orElseThrow(NotFoundException::new));
         booking.setBookingDate(LocalDateTime.now());
-        booking.setPhoneNumber(dto.phoneNumber());
+        booking.setAppUser(userRepository.findByUsername(username).orElseThrow(NotFoundException::new));
         booking.setPeopleCount(dto.peopleCount());
         booking.setComment(dto.comment());
         bookingRepository.save(booking);

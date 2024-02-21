@@ -21,8 +21,7 @@ public class CacheConfig {
     @Bean
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager(
-                "discoverToursCache",
-                "recommendedToursCache",
+                "tourListsCache",
                 "tourDetailsCache");
 
         cacheManager.setCaffeineSpec(CaffeineSpec.parse("maximumSize=100, expireAfterWrite=30m"));

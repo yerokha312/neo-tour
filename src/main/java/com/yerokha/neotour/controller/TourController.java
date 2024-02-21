@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/tours")
@@ -77,55 +78,16 @@ public class TourController {
                                     @ExampleObject(name = "Popular tours", value = "popular"),
                                     @ExampleObject(name = "Featured tours", value = "featured"),
                                     @ExampleObject(name = "Most visited tours", value = "visited"),
-                                    @ExampleObject(name = "Tours by continent", value = "Asia")
+                                    @ExampleObject(name = "Tours by continent", value = "asia"),
+                                    @ExampleObject(name = "Recommended tours", value = "recommended")
                             }, required = true),
                     @Parameter(name = "page", description = "Page number", example = "0"),
-                    @Parameter(name = "size", description = "Page size", example = "3")
+                    @Parameter(name = "size", description = "Page size", example = "3"),
+                    @Parameter(name = "month", description = "Recommended in month...", example = "3")
             }
     )
-    public ResponseEntity<Page<TourDtoFromList>> getTours(
-            @RequestParam("param") String param,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "3") int size
-    ) {
-        return ResponseEntity.ok(tourService.getTours(param, page, size));
-    }
-
-    @GetMapping("/recommended")
-    @Operation(
-            summary = "Get recommended tours",
-            description = "Get recommended tours for a given month",
-            tags = {"tour", "get"},
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Paged list of recommended tours"),
-                    @ApiResponse(responseCode = "400", description = "Invalid month", content = @Content)
-            },
-            parameters = {
-                    @Parameter(name = "month", description = "Month to get recommended tours for",
-                            examples = {
-                                    @ExampleObject(name = "January", value = "1"),
-                                    @ExampleObject(name = "February", value = "2"),
-                                    @ExampleObject(name = "March", value = "3"),
-                                    @ExampleObject(name = "April", value = "4"),
-                                    @ExampleObject(name = "May", value = "5"),
-                                    @ExampleObject(name = "June", value = "6"),
-                                    @ExampleObject(name = "July", value = "7"),
-                                    @ExampleObject(name = "August", value = "8"),
-                                    @ExampleObject(name = "September", value = "9"),
-                                    @ExampleObject(name = "October", value = "10"),
-                                    @ExampleObject(name = "November", value = "11"),
-                                    @ExampleObject(name = "December", value = "12")
-                            }, required = true),
-                    @Parameter(name = "page", description = "Page number", example = "0"),
-                    @Parameter(name = "size", description = "Page size", example = "3")
-            }
-    )
-    public ResponseEntity<Page<TourDtoFromList>> getRecommendedTours(
-            @RequestParam(value = "month", required = false) Integer month,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "12") int size
-    ) {
-        return ResponseEntity.ok(tourService.getRecommendedTours(month, page, size));
+    public ResponseEntity<Page<TourDtoFromList>> getTours(@RequestParam Map<String, String> params) {
+        return ResponseEntity.ok(tourService.getTours(params));
     }
 
     @PutMapping
