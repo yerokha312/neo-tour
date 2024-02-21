@@ -1,7 +1,9 @@
 package com.yerokha.neotour.service;
 
 import com.yerokha.neotour.dto.CreateBookingDto;
+import com.yerokha.neotour.entity.AppUser;
 import com.yerokha.neotour.entity.Booking;
+import com.yerokha.neotour.entity.Tour;
 import com.yerokha.neotour.exception.NotFoundException;
 import com.yerokha.neotour.repository.BookingRepository;
 import com.yerokha.neotour.repository.TourRepository;
@@ -26,10 +28,12 @@ public class BookingService {
 
     @Transactional
     public void addBooking(CreateBookingDto dto, String username) {
+        Tour tour = tourRepository.findById(dto.tourId()).orElseThrow(NotFoundException::new);
+        AppUser appUser = userRepository.findByUsernameIgnoreCase(username).orElseThrow(NotFoundException::new);
         Booking booking = new Booking();
-        booking.setTour(tourRepository.findById(dto.tourId()).orElseThrow(NotFoundException::new));
+        booking.setTour(tour);
         booking.setBookingDate(LocalDateTime.now());
-        booking.setAppUser(userRepository.findByUsernameIgnoreCase(username).orElseThrow(NotFoundException::new));
+        booking.setAppUser(appUser);
         booking.setPeopleCount(dto.peopleCount());
         booking.setComment(dto.comment());
         bookingRepository.save(booking);
