@@ -68,10 +68,10 @@ public class TourService {
         tourRepository.incrementViewCount(id);
     }
 
-    @Transactional
+    /*@Transactional
     protected void incrementBookingCount(Long tourId) {
         tourRepository.incrementBookingCount(tourId);
-    }
+    }*/
 
     @Cacheable(value = "tourListsCache", key = "#params.hashCode()")
     public Page<TourDtoFromList> getTours(Map<String, String> params) {

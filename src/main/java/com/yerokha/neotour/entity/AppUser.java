@@ -52,7 +52,7 @@ public class AppUser implements UserDetails {
     private boolean credentialsNonExpired = true;
     private boolean enabled = false;
 
-    @OneToMany
+    @OneToMany(mappedBy = "appUser")
     private List<Booking> bookings;
 
     @ManyToMany(fetch = FetchType.EAGER)

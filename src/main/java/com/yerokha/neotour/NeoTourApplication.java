@@ -27,11 +27,10 @@ public class NeoTourApplication {
                 return;
             }
             Role adminRole = roleRepository.save(new Role("ADMIN"));
-            Role userRole = roleRepository.save(new Role("USER"));
+            roleRepository.save(new Role("USER"));
 
             Set<Role> roles = new HashSet<>();
             roles.add(adminRole);
-            roles.add(userRole);
 
             AppUser admin = new AppUser();
             admin.setUsername("admin");

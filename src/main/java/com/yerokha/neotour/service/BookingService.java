@@ -29,7 +29,7 @@ public class BookingService {
         Booking booking = new Booking();
         booking.setTour(tourRepository.findById(dto.tourId()).orElseThrow(NotFoundException::new));
         booking.setBookingDate(LocalDateTime.now());
-        booking.setAppUser(userRepository.findByUsername(username).orElseThrow(NotFoundException::new));
+        booking.setAppUser(userRepository.findByUsernameIgnoreCase(username).orElseThrow(NotFoundException::new));
         booking.setPeopleCount(dto.peopleCount());
         booking.setComment(dto.comment());
         bookingRepository.save(booking);
