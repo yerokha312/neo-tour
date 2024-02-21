@@ -76,7 +76,7 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v1/registration", "/v1/login").anonymous()
-                        .requestMatchers(HttpMethod.GET, "/v1/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/v1/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "v1/tours").hasRole("ADMIN")
                         .anyRequest().hasRole("ADMIN"))
@@ -93,7 +93,7 @@ public class WebSecurityConfig {
 
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/v1/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/**").permitAll()
                         .requestMatchers("/v1/registration", "/v1/login").anonymous()
                         .anyRequest().hasRole("ADMIN"))
                 .oauth2ResourceServer(oauth2 -> oauth2
