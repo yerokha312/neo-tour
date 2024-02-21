@@ -29,8 +29,9 @@ public class Booking {
     @Column(name = "booking_date")
     private LocalDateTime bookingDate;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private AppUser appUser;
 
     @Column(name = "people_count")
     private int peopleCount;
