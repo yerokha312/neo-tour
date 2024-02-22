@@ -83,7 +83,11 @@ public class WebSecurityConfig {
                         .anyRequest().hasRole("ADMIN"))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(converter())))
-                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS));
+                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+                .logout(logout -> logout.logoutUrl("/v1/logout")
+                        .clearAuthentication(true)
+                        .invalidateHttpSession(true)
+                        .permitAll());
 
         return http.build();
     }
