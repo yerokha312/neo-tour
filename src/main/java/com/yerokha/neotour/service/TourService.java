@@ -27,7 +27,6 @@ public class TourService {
 
     private final TourRepository tourRepository;
     private final ImageService imageService;
-
     private final ObjectMapper mapper = new ObjectMapper();
 
     public TourService(TourRepository tourRepository, ImageService imageService) {
@@ -68,11 +67,6 @@ public class TourService {
         tourRepository.incrementViewCount(id);
     }
 
-    /*@Transactional
-    protected void incrementBookingCount(Long tourId) {
-        tourRepository.incrementBookingCount(tourId);
-    }*/
-
     @Cacheable(value = "tourListsCache", key = "#params.hashCode()")
     public Page<TourDtoFromList> getTours(Map<String, String> params) {
         String param = params.get("param");
@@ -82,7 +76,17 @@ public class TourService {
 
         int page = Integer.parseInt(pageStr);
         int size = Integer.parseInt(sizeStr);
-        int month = monthStr != null ? Integer.parseInt(monthStr) : LocalDate.now().getMonthValue();
+        int month;
+
+        if (monthStr != null) {
+            month = Integer.parseInt(monthStr);
+            if (month < 1 || month > 12) {
+                throw new IllegalArgumentException("Month must be between 1 and 12");
+            }
+        } else {
+            month = LocalDate.now().getMonthValue();
+        }
+        int monthMask = Months.ALL[month - 1];
 
         if (page < 0 || size < 1) {
             throw new IllegalArgumentException("Invalid page or size");
@@ -94,8 +98,8 @@ public class TourService {
             case "popular" -> getPopularTours(pageable);
             case "featured" -> getFeaturedTours(pageable);
             case "visited" -> getMostVisitedTours(pageable);
-            case "recommended" -> getRecommendedTours(month, page);
-            default -> getToursByContinent(param, pageable);
+            case "recommended" -> getRecommendedTours(monthMask, page);
+            default -> getToursByContinent(param, pageable, monthMask);
         };
     }
 
@@ -114,18 +118,12 @@ public class TourService {
                 .map(TourMapper::toTourDtoFromList);
     }
 
-    private Page<TourDtoFromList> getToursByContinent(String continent, Pageable pageable) {
-        return tourRepository.findAllByLocation_Continent(continent, pageable)
+    private Page<TourDtoFromList> getToursByContinent(String continent, Pageable pageable, int monthMask) {
+        return tourRepository.findAllByLocation_Continent(continent, pageable, monthMask)
                 .map(TourMapper::toTourDtoFromList);
     }
 
-    private Page<TourDtoFromList> getRecommendedTours(Integer month, int page) {
-        if (month == null || month < 1 || month > 12) {
-            month = LocalDate.now().getMonthValue();
-        }
-
-        int monthMask = Months.ALL[month - 1];
-
+    private Page<TourDtoFromList> getRecommendedTours(Integer monthMask, int page) {
         int size = 12;
 
         return tourRepository.findRecommendedTours(monthMask, PageRequest.of(page, size))

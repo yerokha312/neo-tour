@@ -13,8 +13,8 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
 
     Page<Tour> findAllByOrderByBookingCountDesc(Pageable pageable);
 
-    @Query("SELECT t FROM Tour t WHERE LOWER(t.location.continent) = LOWER(:continent)")
-    Page<Tour> findAllByLocation_Continent(String continent, Pageable pageable);
+    @Query("SELECT t FROM Tour t WHERE (LOWER(t.location.continent) = LOWER(:continent) AND BITAND(t.recommendedMonths, :monthMask) > 0)")
+    Page<Tour> findAllByLocation_Continent(String continent, Pageable pageable, int monthMask);
 
     @Query("SELECT t FROM Tour t WHERE BITAND(t.recommendedMonths, :monthMask) > 0")
     Page<Tour> findRecommendedTours(int monthMask, Pageable pageable);
