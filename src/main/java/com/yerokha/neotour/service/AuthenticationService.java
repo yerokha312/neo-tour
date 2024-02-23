@@ -4,6 +4,7 @@ import com.yerokha.neotour.dto.LoginRequest;
 import com.yerokha.neotour.dto.LoginResponse;
 import com.yerokha.neotour.dto.RegistrationRequest;
 import com.yerokha.neotour.entity.AppUser;
+import com.yerokha.neotour.entity.Image;
 import com.yerokha.neotour.entity.Role;
 import com.yerokha.neotour.exception.EmailAlreadyTakenException;
 import com.yerokha.neotour.exception.NotEnabledException;
@@ -81,12 +82,14 @@ public class AuthenticationService {
             String token = tokenService.generateToken(authentication);
 
             AppUser appUser = (AppUser) authentication.getPrincipal();
+            Image profilePicture = appUser.getProfilePicture();
             return new LoginResponse(
                     appUser.getUsername(),
                     appUser.getFirstName(),
                     appUser.getLastName(),
                     appUser.getPhoneNumber(),
                     appUser.getEmail(),
+                    profilePicture == null ? null : profilePicture.getImageUrl(),
                     token);
 
         } catch (AuthenticationException e) {

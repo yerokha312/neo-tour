@@ -19,7 +19,6 @@ public class ReviewMapper {
 
     public static Review fromDto(CreateReviewDto dto) {
         Review review = new Review();
-        review.setAuthor(dto.author());
         review.setReviewDate(LocalDate.now());
         review.setBody(dto.text());
 
