@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +38,7 @@ public class BookingController {
 
     @GetMapping
     @Hidden
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Page<BookingListRequest>> getBookings(
             Authentication authentication,
             @RequestParam(defaultValue = "0") int page,
@@ -46,6 +48,7 @@ public class BookingController {
 
     @GetMapping("{id}")
     @Hidden
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<BookingResponse> getBooking(@PathVariable Long id) {
         return ResponseEntity.ok(bookingService.getBooking(id));
     }
