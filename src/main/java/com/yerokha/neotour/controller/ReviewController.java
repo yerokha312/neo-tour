@@ -35,7 +35,7 @@ public class ReviewController {
     @ResponseStatus(HttpStatus.CREATED)
 //    @Hidden
     public void addReview(@RequestPart String dto,
-                          @RequestPart("image") MultipartFile image,
+                          @RequestPart(value = "image", required = false) MultipartFile image,
                           Authentication authentication) {
         reviewService.addReview(dto, image, authentication.getName());
     }

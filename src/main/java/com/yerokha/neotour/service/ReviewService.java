@@ -50,7 +50,10 @@ public class ReviewService {
         AppUser appUser = (AppUser) userService.loadUserByUsername(username);
         review.setAuthor(appUser.getFirstName() + " " + appUser.getLastName());
         review.setTour(tourRepository.findById(dto.tourId()).orElseThrow(() -> new NotFoundException("Tour not found")));
-        Image tempImage = imageService.processImage(image);
+        Image tempImage = null;
+        if (image != null) {
+            tempImage = imageService.processImage(image);
+        }
         appUser.setProfilePicture(tempImage);
         review.setProfilePicture(tempImage);
 
