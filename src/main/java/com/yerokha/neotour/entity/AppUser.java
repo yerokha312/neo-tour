@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -46,6 +47,10 @@ public class AppUser implements UserDetails {
 
     @Column(name = "last_name")
     private String lastName;
+
+    @ManyToOne
+    @JoinColumn(name = "image_id")
+    private Image profilePicture;
 
     private boolean nonExpired = true;
     private boolean nonLocked = true;

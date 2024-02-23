@@ -6,6 +6,7 @@ public record LoginResponse(
         String lastName,
         String phoneNumber,
         String email,
+        String imageUrl,
         String accessToken
 ) {
 }

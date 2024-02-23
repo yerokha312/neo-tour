@@ -5,11 +5,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "image")
+@Table(name = "image", indexes = @Index(name = "image_hash_idx", columnList = "hash"))
 @Data
 public class Image {
 
@@ -23,4 +24,7 @@ public class Image {
 
     @Column(name = "image_name")
     private String imageName;
+
+    @Column(name = "hash")
+    private String hash;
 }

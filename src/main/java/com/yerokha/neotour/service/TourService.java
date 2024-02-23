@@ -50,9 +50,7 @@ public class TourService {
         }
 
         tour.setRecommendedMonths(months);
-        for (MultipartFile image : images) {
-            tour.addImage(imageService.processImage(image));
-        }
+        images.stream().map(imageService::processImage).forEach(tour::addImage);
         tourRepository.save(tour);
     }
 
