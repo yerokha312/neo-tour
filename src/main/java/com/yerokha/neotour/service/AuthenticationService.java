@@ -69,7 +69,7 @@ public class AuthenticationService {
     }
 
     public boolean usernameExists(String username) {
-        return userRepository.findByUsernameIgnoreCase(username).isPresent();
+        return userRepository.findByUsernameOrEmailIgnoreCase(username, username).isPresent();
     }
 
     public LoginResponse login(LoginRequest request) {
@@ -80,7 +80,14 @@ public class AuthenticationService {
 
             String token = tokenService.generateToken(authentication);
 
-            return new LoginResponse(request.username(), token);
+            AppUser appUser = (AppUser) authentication.getPrincipal();
+            return new LoginResponse(
+                    appUser.getUsername(),
+                    appUser.getFirstName(),
+                    appUser.getLastName(),
+                    appUser.getPhoneNumber(),
+                    appUser.getEmail(),
+                    token);
 
         } catch (AuthenticationException e) {
             if (e instanceof DisabledException) {

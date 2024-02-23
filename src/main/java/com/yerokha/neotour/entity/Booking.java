@@ -26,6 +26,9 @@ public class Booking {
     @JoinColumn(name = "tour_id")
     private Tour tour;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     @Column(name = "booking_date")
     private LocalDateTime bookingDate;
 

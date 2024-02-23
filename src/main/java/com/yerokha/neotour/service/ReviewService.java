@@ -38,7 +38,7 @@ public class ReviewService {
             throw new RuntimeException(e);
         }
         Review review = ReviewMapper.fromDto(dto);
-        review.setTour(tourRepository.findById(dto.tourId()).orElseThrow(NotFoundException::new));
+        review.setTour(tourRepository.findById(dto.tourId()).orElseThrow(() -> new NotFoundException("Tour not found")));
         review.setProfilePicture(imageService.processImage(image));
 
         reviewRepository.save(review);
@@ -46,7 +46,7 @@ public class ReviewService {
 
     public Page<ReviewDto> getReviewsByTourId(Long tourId, int page, int size) {
         if (!tourRepository.existsById(tourId)) {
-            throw new NotFoundException();
+            throw new NotFoundException("Tour not found");
         }
         return reviewRepository.findAllByTour_Id(tourId, PageRequest.of(page, size)).map(ReviewMapper::toDto);
     }
