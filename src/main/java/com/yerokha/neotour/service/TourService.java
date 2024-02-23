@@ -58,7 +58,7 @@ public class TourService {
 
     @Cacheable(value = "tourDetailsCache", key = "#id")
     public TourDto getTourById(Long id) {
-        Tour tour = tourRepository.findById(id).orElseThrow(NotFoundException::new);
+        Tour tour = tourRepository.findById(id).orElseThrow(() -> new NotFoundException("Tour not found"));
         return TourMapper.toDto(tour);
     }
 

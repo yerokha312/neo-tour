@@ -50,7 +50,7 @@ public class AppUser implements UserDetails {
     private boolean nonExpired = true;
     private boolean nonLocked = true;
     private boolean credentialsNonExpired = true;
-    private boolean enabled = false;
+    private boolean enabled = true;
 
     @OneToMany(mappedBy = "appUser")
     private List<Booking> bookings;

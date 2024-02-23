@@ -1,17 +1,26 @@
 package com.yerokha.neotour.controller;
 
-import com.yerokha.neotour.dto.CreateBookingDto;
+import com.yerokha.neotour.dto.BookingListRequest;
+import com.yerokha.neotour.dto.BookingRequest;
+import com.yerokha.neotour.dto.BookingResponse;
 import com.yerokha.neotour.service.BookingService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,6 +33,21 @@ public class BookingController {
 
     public BookingController(BookingService bookingService) {
         this.bookingService = bookingService;
+    }
+
+    @GetMapping
+    @Hidden
+    public ResponseEntity<Page<BookingListRequest>> getBookings(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(bookingService.getBookings(authentication.getName(), page, size));
+    }
+
+    @GetMapping("{id}")
+    @Hidden
+    public ResponseEntity<BookingResponse> getBooking(@PathVariable Long id) {
+        return ResponseEntity.ok(bookingService.getBooking(id));
     }
 
     @PostMapping
@@ -39,8 +63,15 @@ public class BookingController {
                     @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content)
             }
     )
-    public void addBooking(@RequestBody @Valid CreateBookingDto dto, Authentication authentication) {
+    public BookingResponse addBooking(@RequestBody @Valid BookingRequest dto, Authentication authentication) {
         String username = authentication.getName();
-        bookingService.addBooking(dto, username);
+        return bookingService.addBooking(dto, username);
+    }
+
+    @DeleteMapping("/{id}")
+    @Hidden
+    public ResponseEntity<String> deleteBooking(@PathVariable Long id) {
+        bookingService.deleteBooking(id);
+        return ResponseEntity.ok("Booking deleted");
     }
 }
