@@ -20,10 +20,11 @@ public class BookingMapper {
         );
     }
 
-    public static BookingListDto toListRequest(Booking booking) {
+    public static BookingListDto toListDto(Booking booking) {
         return new BookingListDto(
                 booking.getId(),
                 booking.getTour().getId(),
+                booking.getBookingDate(),
                 booking.getTour().getImages().get(0).getImageUrl(),
                 booking.getTour().getTourName()
         );

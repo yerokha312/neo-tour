@@ -38,7 +38,7 @@ public class BookingController {
 
     @GetMapping
     @Hidden
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Page<BookingListDto>> getBookings(
             Authentication authentication,
             @RequestParam(defaultValue = "0") int page,

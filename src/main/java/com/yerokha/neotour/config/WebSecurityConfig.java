@@ -81,6 +81,7 @@ public class WebSecurityConfig {
                         .requestMatchers(GET, "/**").permitAll()
                         .requestMatchers(POST, "/v1/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(POST, "v1/tours").hasRole("ADMIN")
+                        .requestMatchers("v1/users").hasAnyRole("USER", "ADMIN")
                         .anyRequest().hasRole("ADMIN"))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(converter())))

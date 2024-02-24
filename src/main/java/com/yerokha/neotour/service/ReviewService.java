@@ -17,14 +17,14 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final TourRepository tourRepository;
-    private final UserService userService;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final TourService tourService;
 
 
-    public ReviewService(ReviewRepository reviewRepository, TourRepository tourRepository, UserService userService, TourService tourService) {
+    public ReviewService(ReviewRepository reviewRepository, TourRepository tourRepository, UserDetailsServiceImpl userDetailsServiceImpl, TourService tourService) {
         this.reviewRepository = reviewRepository;
         this.tourRepository = tourRepository;
-        this.userService = userService;
+        this.userDetailsServiceImpl = userDetailsServiceImpl;
         this.tourService = tourService;
     }
 
@@ -34,7 +34,7 @@ public class ReviewService {
         }
 
         Review review = ReviewMapper.fromDto(dto);
-        AppUser appUser = (AppUser) userService.loadUserByUsername(username);
+        AppUser appUser = (AppUser) userDetailsServiceImpl.loadUserByUsername(username);
         review.setAuthor(appUser.getFirstName() + " " + appUser.getLastName());
         review.setTour(tourRepository.findById(dto.tourId()).orElseThrow(() -> new NotFoundException("Tour not found")));
         review.setProfilePicture(appUser.getProfilePicture());

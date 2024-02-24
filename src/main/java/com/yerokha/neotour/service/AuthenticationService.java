@@ -11,6 +11,7 @@ import com.yerokha.neotour.entity.Image;
 import com.yerokha.neotour.entity.Role;
 import com.yerokha.neotour.exception.EmailAlreadyTakenException;
 import com.yerokha.neotour.exception.NotEnabledException;
+import com.yerokha.neotour.exception.PhoneNumberAlreadyTakenException;
 import com.yerokha.neotour.exception.UsernameAlreadyTakenException;
 import com.yerokha.neotour.repository.RoleRepository;
 import com.yerokha.neotour.repository.UserRepository;
@@ -63,6 +64,10 @@ public class AuthenticationService {
         if (emailExists(request.email())) {
             throw new EmailAlreadyTakenException("Email is already taken");
         }
+        if (phoneNumberExists(request.phoneNumber())) {
+            throw new PhoneNumberAlreadyTakenException("Email is already taken");
+        }
+
 
         AppUser appUser = UserMapper.fromDto(request);
         appUser.setProfilePicture(imageService.processImage(image));
@@ -72,6 +77,10 @@ public class AuthenticationService {
         appUser.setPassword(encodedPassword);
         appUser.setAuthorities(authorities);
         return UserMapper.toDto(userRepository.save(appUser));
+    }
+
+    public boolean phoneNumberExists(String phoneNumber) {
+        return userRepository.findByPhoneNumber(phoneNumber).isPresent();
     }
 
     public boolean emailExists(String email) {

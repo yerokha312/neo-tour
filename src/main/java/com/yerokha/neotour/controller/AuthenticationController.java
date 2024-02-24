@@ -2,10 +2,12 @@ package com.yerokha.neotour.controller;
 
 import com.yerokha.neotour.dto.LoginRequest;
 import com.yerokha.neotour.dto.LoginResponse;
+import com.yerokha.neotour.dto.RegistrationRequest;
 import com.yerokha.neotour.dto.RegistrationResponse;
 import com.yerokha.neotour.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -38,6 +40,10 @@ public class AuthenticationController {
                     @ApiResponse(responseCode = "409", description = "Username or email is already exists", content = @Content)
             }
     )
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
+            content = {
+                    @Content(schema = @Schema(implementation = RegistrationRequest.class)
+                    )})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/registration")
     public ResponseEntity<RegistrationResponse> register(@RequestPart("dto") @Valid String dto,

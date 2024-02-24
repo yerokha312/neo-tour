@@ -6,6 +6,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -21,7 +22,10 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "app_user")
+@Table(name = "app_user", indexes = {
+        @Index(name = "username_idx", columnList = "username"),
+        @Index(name = "email_idx", columnList = "email")
+})
 @Data
 public class AppUser implements UserDetails {
 
