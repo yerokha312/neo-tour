@@ -1,11 +1,8 @@
 package com.yerokha.neotour.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yerokha.neotour.dto.CreateReviewDto;
 import com.yerokha.neotour.dto.ReviewDto;
 import com.yerokha.neotour.entity.AppUser;
-import com.yerokha.neotour.entity.Image;
 import com.yerokha.neotour.entity.Review;
 import com.yerokha.neotour.exception.NotFoundException;
 import com.yerokha.neotour.repository.ReviewRepository;
@@ -14,50 +11,37 @@ import com.yerokha.neotour.util.ReviewMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final TourRepository tourRepository;
-    private final ImageService imageService;
-    private final UserService userService;
-
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final TourService tourService;
 
 
-    public ReviewService(ReviewRepository reviewRepository, TourRepository tourRepository, ImageService imageService, UserService userService) {
+    public ReviewService(ReviewRepository reviewRepository, TourRepository tourRepository, UserDetailsServiceImpl userDetailsServiceImpl, TourService tourService) {
         this.reviewRepository = reviewRepository;
         this.tourRepository = tourRepository;
-        this.imageService = imageService;
-        this.userService = userService;
+        this.userDetailsServiceImpl = userDetailsServiceImpl;
+        this.tourService = tourService;
     }
 
-    public void addReview(String json, MultipartFile image, String username) {
-        CreateReviewDto dto;
-        try {
-            dto = mapper.readValue(json, CreateReviewDto.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
+    public ReviewDto addReview(CreateReviewDto dto, String username) {
         if (!tourRepository.existsById(dto.tourId())) {
             throw new NotFoundException("Tour not found");
         }
 
         Review review = ReviewMapper.fromDto(dto);
-        AppUser appUser = (AppUser) userService.loadUserByUsername(username);
+        AppUser appUser = (AppUser) userDetailsServiceImpl.loadUserByUsername(username);
         review.setAuthor(appUser.getFirstName() + " " + appUser.getLastName());
         review.setTour(tourRepository.findById(dto.tourId()).orElseThrow(() -> new NotFoundException("Tour not found")));
-        Image tempImage = null;
-        if (image != null) {
-            tempImage = imageService.processImage(image);
-        }
-        appUser.setProfilePicture(tempImage);
-        review.setProfilePicture(tempImage);
+        review.setProfilePicture(appUser.getProfilePicture());
 
-        reviewRepository.save(review);
+        ReviewDto reviewDto = ReviewMapper.toDto(reviewRepository.save(review));
+        tourService.evictTourCacheById(dto.tourId());
+        return reviewDto;
     }
 
     public Page<ReviewDto> getReviewsByTourId(Long tourId, int page, int size) {

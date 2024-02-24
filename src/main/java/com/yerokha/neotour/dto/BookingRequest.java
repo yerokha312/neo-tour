@@ -14,7 +14,7 @@ public record BookingRequest(
         @NotNull(message = "Phone number cannot be null") @NotBlank(message = "Phone number cannot be blank")
         @Pattern(regexp = "^\\+(?:[0-9] ?){6,14}[0-9]$", message = "Invalid phone number format")
         String phoneNumber,
-        boolean wantSavePhone,
+        boolean savePhone,
         @Min(value = 1, message = "People count must be greater than or equal to 1")
         @Max(value = 6, message = "People count must be less than or equal to 6")
         Integer peopleCount,

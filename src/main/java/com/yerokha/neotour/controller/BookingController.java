@@ -1,6 +1,6 @@
 package com.yerokha.neotour.controller;
 
-import com.yerokha.neotour.dto.BookingListRequest;
+import com.yerokha.neotour.dto.BookingListDto;
 import com.yerokha.neotour.dto.BookingRequest;
 import com.yerokha.neotour.dto.BookingResponse;
 import com.yerokha.neotour.service.BookingService;
@@ -38,8 +38,8 @@ public class BookingController {
 
     @GetMapping
     @Hidden
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<Page<BookingListRequest>> getBookings(
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<Page<BookingListDto>> getBookings(
             Authentication authentication,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {

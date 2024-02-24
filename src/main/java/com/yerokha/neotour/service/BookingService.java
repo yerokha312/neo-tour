@@ -1,6 +1,6 @@
 package com.yerokha.neotour.service;
 
-import com.yerokha.neotour.dto.BookingListRequest;
+import com.yerokha.neotour.dto.BookingListDto;
 import com.yerokha.neotour.dto.BookingRequest;
 import com.yerokha.neotour.dto.BookingResponse;
 import com.yerokha.neotour.entity.AppUser;
@@ -41,8 +41,8 @@ public class BookingService {
         booking.setBookingDate(LocalDateTime.now());
         booking.setAppUser(tourAndUser.appUser());
         String phoneNumber = dto.phoneNumber();
-        if (dto.wantSavePhone()) {
-            if (userRepository.findByPhoneNumber(phoneNumber).isPresent() && !Objects.equals(tourAndUser.appUser().getPhoneNumber(), phoneNumber)) {
+        if (dto.savePhone()) {
+            if (phoneNumberAlreadyExists(phoneNumber, tourAndUser)) {
                 throw new PhoneNumberAlreadyTakenException("Phone number already taken");
             }
             tourAndUser.appUser().setPhoneNumber(phoneNumber);
@@ -53,6 +53,11 @@ public class BookingService {
         bookingRepository.save(booking);
         tourRepository.incrementBookingCount(booking.getTour().getId());
         return BookingMapper.toResponse(booking);
+    }
+
+    private boolean phoneNumberAlreadyExists(String phoneNumber, Result tourAndUser) {
+        return userRepository.findByPhoneNumber(phoneNumber).isPresent() && !Objects.equals(
+                tourAndUser.appUser().getPhoneNumber(), phoneNumber);
     }
 
     private Result lookUpForTourAndUser(BookingRequest dto, String username) {
@@ -70,9 +75,9 @@ public class BookingService {
                 new NotFoundException("Booking not found")));
     }
 
-    public Page<BookingListRequest> getBookings(String username, int page, int size) {
+    public Page<BookingListDto> getBookings(String username, int page, int size) {
         return bookingRepository.findAllByAppUser_Username(username, PageRequest.of(page, size))
-                .map(BookingMapper::toListRequest);
+                .map(BookingMapper::toListDto);
     }
 
     public void deleteBooking(Long id) {
