@@ -12,7 +12,7 @@ public record RegistrationRequest(
         @Length(min = 6, max = 20)
         String username,
         @NotNull(message = "Phone number cannot be null") @NotBlank(message = "Phone number cannot be blank")
-        @Pattern(regexp = "^\\+(?:[0-9] ?){6,14}[0-9]$", message = "Invalid phone number format")
+        @Pattern(regexp = "^\\+(?:\\d{1,3}\\s?)?\\(\\d{1,4}\\)\\s?\\d{1,4}(?:\\s?[-\\s]?\\d{1,4}){1,2}$", message = "Invalid phone number format")
         String phoneNumber,
         @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-={}:;.,<>/?]).{8,15}$")
         String password,

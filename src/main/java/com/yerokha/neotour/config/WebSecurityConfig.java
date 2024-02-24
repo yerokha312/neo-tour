@@ -9,6 +9,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import com.yerokha.neotour.util.RSAKeyProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -76,6 +77,29 @@ public class WebSecurityConfig {
         http
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/v1/registration", "/v1/login").anonymous()
+                        .requestMatchers(GET, "/**").permitAll()
+                        .requestMatchers(POST, "/v1/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(POST, "v1/tours").hasRole("ADMIN")
+                        .requestMatchers("v1/users").hasAnyRole("USER", "ADMIN")
+                        .anyRequest().hasRole("ADMIN"))
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(converter())))
+                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+                .logout(logout -> logout.logoutUrl("/v1/logout")
+                        .clearAuthentication(true)
+                        .invalidateHttpSession(true)
+                        .permitAll());
+
+        return http.build();
+    }
+
+    @Bean
+    @Profile("prod")
+    public SecurityFilterChain filterChainProd(HttpSecurity http) throws Exception {
+
+        http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v1/registration", "/v1/login").anonymous()
                         .requestMatchers(GET, "/**").permitAll()

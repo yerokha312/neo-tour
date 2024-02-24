@@ -69,8 +69,10 @@ public class AuthenticationController {
 
         validateRegistrationRequest(request);
 
-        if (!Objects.requireNonNull(image.getContentType()).startsWith("image/")) {
-            throw new IllegalArgumentException("Uploaded file is not an image");
+        if (image != null) {
+            if (!Objects.requireNonNull(image.getContentType()).startsWith("image/")) {
+                throw new IllegalArgumentException("Uploaded file is not an image");
+            }
         }
 
         return new ResponseEntity<>(authenticationService.registerUser(request, image), HttpStatus.CREATED);
