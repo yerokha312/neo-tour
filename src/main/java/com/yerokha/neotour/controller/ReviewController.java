@@ -1,5 +1,6 @@
 package com.yerokha.neotour.controller;
 
+import com.yerokha.neotour.dto.CreateReviewDto;
 import com.yerokha.neotour.dto.ReviewDto;
 import com.yerokha.neotour.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,12 +14,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/v1/reviews")
@@ -33,11 +33,9 @@ public class ReviewController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-//    @Hidden
-    public void addReview(@RequestPart String dto,
-                          @RequestPart(value = "image", required = false) MultipartFile image,
-                          Authentication authentication) {
-        reviewService.addReview(dto, image, authentication.getName());
+    public ResponseEntity<ReviewDto> addReview(@RequestBody CreateReviewDto dto,
+                                               Authentication authentication) {
+        return new ResponseEntity<>(reviewService.addReview(dto, authentication.getName()), HttpStatus.CREATED);
     }
 
     @GetMapping("/{tourId}")

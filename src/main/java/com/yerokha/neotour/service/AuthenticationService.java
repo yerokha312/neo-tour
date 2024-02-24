@@ -1,8 +1,11 @@
 package com.yerokha.neotour.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yerokha.neotour.dto.LoginRequest;
 import com.yerokha.neotour.dto.LoginResponse;
 import com.yerokha.neotour.dto.RegistrationRequest;
+import com.yerokha.neotour.dto.RegistrationResponse;
 import com.yerokha.neotour.entity.AppUser;
 import com.yerokha.neotour.entity.Image;
 import com.yerokha.neotour.entity.Role;
@@ -11,6 +14,7 @@ import com.yerokha.neotour.exception.NotEnabledException;
 import com.yerokha.neotour.exception.UsernameAlreadyTakenException;
 import com.yerokha.neotour.repository.RoleRepository;
 import com.yerokha.neotour.repository.UserRepository;
+import com.yerokha.neotour.util.UserMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -20,6 +24,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
 
@@ -32,37 +37,41 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
+    private final ImageService imageService;
+    private final ObjectMapper objectMapper;
 
-    public AuthenticationService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenService tokenService) {
+    public AuthenticationService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenService tokenService, ImageService imageService, ObjectMapper objectMapper) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
+        this.imageService = imageService;
+        this.objectMapper = objectMapper;
     }
 
-    public void registerUser(RegistrationRequest request) {
-        String username = request.username();
-        if (usernameExists(username)) {
+    public RegistrationResponse registerUser(String dto, MultipartFile image) {
+        RegistrationRequest request;
+        try {
+            request = objectMapper.readValue(dto, RegistrationRequest.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        if (usernameExists(request.username())) {
             throw new UsernameAlreadyTakenException("Username is already taken");
         }
-        String email = request.email();
-        if (emailExists(email)) {
+        if (emailExists(request.email())) {
             throw new EmailAlreadyTakenException("Email is already taken");
         }
 
+        AppUser appUser = UserMapper.fromDto(request);
+        appUser.setProfilePicture(imageService.processImage(image));
         String encodedPassword = passwordEncoder.encode(request.password());
         Role userRole = roleRepository.findByAuthority("USER").get();
-
         Set<Role> authorities = Set.of(userRole);
-        AppUser appUser = new AppUser();
-        appUser.setUsername(username);
         appUser.setPassword(encodedPassword);
         appUser.setAuthorities(authorities);
-        appUser.setFirstName(request.firstName());
-        appUser.setLastName(request.lastName());
-        appUser.setEmail(email.toLowerCase());
-        userRepository.save(appUser);
+        return UserMapper.toDto(userRepository.save(appUser));
     }
 
     public boolean emailExists(String email) {

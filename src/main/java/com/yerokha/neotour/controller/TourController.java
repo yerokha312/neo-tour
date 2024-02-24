@@ -1,7 +1,7 @@
 package com.yerokha.neotour.controller;
 
 import com.yerokha.neotour.dto.TourDto;
-import com.yerokha.neotour.dto.TourDtoFromList;
+import com.yerokha.neotour.dto.TourListDto;
 import com.yerokha.neotour.entity.Tour;
 import com.yerokha.neotour.service.TourService;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -86,7 +86,7 @@ public class TourController {
                     @Parameter(name = "month", description = "Recommended in month...", example = "3")
             }
     )
-    public ResponseEntity<Page<TourDtoFromList>> getTours(@RequestParam Map<String, String> params) {
+    public ResponseEntity<Page<TourListDto>> getTours(@RequestParam Map<String, String> params) {
         return ResponseEntity.ok(tourService.getTours(params));
     }
 

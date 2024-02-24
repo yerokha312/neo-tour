@@ -2,10 +2,13 @@ package com.yerokha.neotour.util;
 
 import com.yerokha.neotour.dto.CreateTourDto;
 import com.yerokha.neotour.dto.TourDto;
-import com.yerokha.neotour.dto.TourDtoFromList;
+import com.yerokha.neotour.dto.TourListDto;
 import com.yerokha.neotour.entity.Image;
 import com.yerokha.neotour.entity.Location;
+import com.yerokha.neotour.entity.Review;
 import com.yerokha.neotour.entity.Tour;
+
+import java.util.Comparator;
 
 public class TourMapper {
 
@@ -17,12 +20,16 @@ public class TourMapper {
                 tour.getLocation().getCountry(),
                 tour.getDescription(),
                 tour.getImages().stream().map(Image::getImageUrl).toList(),
-                tour.getReviews().stream().map(ReviewMapper::toDto).limit(3).toList()
+                tour.getReviews().stream()
+                        .sorted(Comparator.comparing(Review::getReviewDateTime).reversed())
+                        .limit(3)
+                        .map(ReviewMapper::toDto)
+                        .toList()
         );
     }
 
-    public static TourDtoFromList toTourDtoFromList(Tour tour) {
-        return new TourDtoFromList(
+    public static TourListDto toTourDtoFromList(Tour tour) {
+        return new TourListDto(
                 tour.getId(),
                 tour.getImages().get(0).getImageUrl(),
                 tour.getTourName()

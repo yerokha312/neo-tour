@@ -4,12 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yerokha.neotour.dto.CreateTourDto;
 import com.yerokha.neotour.dto.TourDto;
-import com.yerokha.neotour.dto.TourDtoFromList;
+import com.yerokha.neotour.dto.TourListDto;
 import com.yerokha.neotour.entity.Tour;
 import com.yerokha.neotour.exception.NotFoundException;
 import com.yerokha.neotour.repository.TourRepository;
 import com.yerokha.neotour.util.Months;
 import com.yerokha.neotour.util.TourMapper;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -60,13 +61,17 @@ public class TourService {
         return TourMapper.toDto(tour);
     }
 
+    @CacheEvict(value = "tourDetailsCache", key = "#id")
+    public void evictTourCacheById(Long id) {
+    }
+
     @Transactional
     public void incrementViewCount(Long id) {
         tourRepository.incrementViewCount(id);
     }
 
     @Cacheable(value = "tourListsCache", key = "#params.hashCode()")
-    public Page<TourDtoFromList> getTours(Map<String, String> params) {
+    public Page<TourListDto> getTours(Map<String, String> params) {
         String param = params.get("param");
         String pageStr = params.getOrDefault("page", "0");
         String sizeStr = params.getOrDefault("size", "3");
@@ -101,27 +106,27 @@ public class TourService {
         };
     }
 
-    private Page<TourDtoFromList> getPopularTours(Pageable pageable) {
+    private Page<TourListDto> getPopularTours(Pageable pageable) {
         return tourRepository.findAllByOrderByViewCountDesc(pageable)
                 .map(TourMapper::toTourDtoFromList);
     }
 
-    private Page<TourDtoFromList> getFeaturedTours(Pageable pageable) {
+    private Page<TourListDto> getFeaturedTours(Pageable pageable) {
         return tourRepository.findAllByFeaturedTrue(Months.getCurrentMonthMask(), pageable)
                 .map(TourMapper::toTourDtoFromList);
     }
 
-    private Page<TourDtoFromList> getMostVisitedTours(Pageable pageable) {
+    private Page<TourListDto> getMostVisitedTours(Pageable pageable) {
         return tourRepository.findAllByOrderByBookingCountDesc(pageable)
                 .map(TourMapper::toTourDtoFromList);
     }
 
-    private Page<TourDtoFromList> getToursByContinent(String continent, Pageable pageable, int monthMask) {
+    private Page<TourListDto> getToursByContinent(String continent, Pageable pageable, int monthMask) {
         return tourRepository.findAllByLocation_Continent(continent, pageable, monthMask)
                 .map(TourMapper::toTourDtoFromList);
     }
 
-    private Page<TourDtoFromList> getRecommendedTours(Integer monthMask, int page) {
+    private Page<TourListDto> getRecommendedTours(Integer monthMask, int page) {
         int size = 12;
 
         return tourRepository.findRecommendedTours(monthMask, PageRequest.of(page, size))

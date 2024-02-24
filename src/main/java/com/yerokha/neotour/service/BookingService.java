@@ -1,6 +1,6 @@
 package com.yerokha.neotour.service;
 
-import com.yerokha.neotour.dto.BookingListRequest;
+import com.yerokha.neotour.dto.BookingListDto;
 import com.yerokha.neotour.dto.BookingRequest;
 import com.yerokha.neotour.dto.BookingResponse;
 import com.yerokha.neotour.entity.AppUser;
@@ -70,7 +70,7 @@ public class BookingService {
                 new NotFoundException("Booking not found")));
     }
 
-    public Page<BookingListRequest> getBookings(String username, int page, int size) {
+    public Page<BookingListDto> getBookings(String username, int page, int size) {
         return bookingRepository.findAllByAppUser_Username(username, PageRequest.of(page, size))
                 .map(BookingMapper::toListRequest);
     }

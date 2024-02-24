@@ -10,7 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "review")
@@ -27,7 +27,7 @@ public class Review {
     private Tour tour;
 
     @Column(name = "review_date")
-    private LocalDate reviewDate;
+    private LocalDateTime reviewDateTime;
 
     @Column(name = "author")
     private String author;
