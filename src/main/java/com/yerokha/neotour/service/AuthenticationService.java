@@ -1,7 +1,5 @@
 package com.yerokha.neotour.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yerokha.neotour.dto.LoginRequest;
 import com.yerokha.neotour.dto.LoginResponse;
 import com.yerokha.neotour.dto.RegistrationRequest;
@@ -39,25 +37,22 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
     private final ImageService imageService;
-    private final ObjectMapper objectMapper;
 
-    public AuthenticationService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenService tokenService, ImageService imageService, ObjectMapper objectMapper) {
+    public AuthenticationService(UserRepository userRepository,
+                                 RoleRepository roleRepository,
+                                 PasswordEncoder passwordEncoder,
+                                 AuthenticationManager authenticationManager,
+                                 TokenService tokenService,
+                                 ImageService imageService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
         this.imageService = imageService;
-        this.objectMapper = objectMapper;
     }
 
-    public RegistrationResponse registerUser(String dto, MultipartFile image) {
-        RegistrationRequest request;
-        try {
-            request = objectMapper.readValue(dto, RegistrationRequest.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+    public RegistrationResponse registerUser(RegistrationRequest request, MultipartFile image) {
         if (usernameExists(request.username())) {
             throw new UsernameAlreadyTakenException("Username is already taken");
         }
@@ -65,12 +60,14 @@ public class AuthenticationService {
             throw new EmailAlreadyTakenException("Email is already taken");
         }
         if (phoneNumberExists(request.phoneNumber())) {
-            throw new PhoneNumberAlreadyTakenException("Email is already taken");
+            throw new PhoneNumberAlreadyTakenException("Phone number is already taken");
         }
 
 
         AppUser appUser = UserMapper.fromDto(request);
-        appUser.setProfilePicture(imageService.processImage(image));
+        if (image != null) {
+            appUser.setProfilePicture(imageService.processImage(image));
+        }
         String encodedPassword = passwordEncoder.encode(request.password());
         Role userRole = roleRepository.findByAuthority("USER").get();
         Set<Role> authorities = Set.of(userRole);
