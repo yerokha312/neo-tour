@@ -1,10 +1,9 @@
 package com.yerokha.neotour.controller;
 
-import com.yerokha.neotour.dto.BookingListDto;
+import com.yerokha.neotour.dto.BookingDto;
 import com.yerokha.neotour.dto.BookingRequest;
 import com.yerokha.neotour.dto.BookingResponse;
 import com.yerokha.neotour.service.BookingService;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,7 +12,6 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,21 +34,34 @@ public class BookingController {
         this.bookingService = bookingService;
     }
 
+    @Operation(
+            summary = "Get bookings", description = "Get paged list of bookings",
+            tags = {"booking", "get"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "401", description = "Should authorize", content = @Content)
+            }
+    )
     @GetMapping
-    @Hidden
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<Page<BookingListDto>> getBookings(
+    public ResponseEntity<Page<BookingDto>> getBookings(
             Authentication authentication,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         return ResponseEntity.ok(bookingService.getBookings(authentication.getName(), page, size));
     }
 
-    @GetMapping("{id}")
-    @Hidden
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<BookingResponse> getBooking(@PathVariable Long id) {
-        return ResponseEntity.ok(bookingService.getBooking(id));
+    @Operation(
+            summary = "Get booking", description = "Get one booking by id",
+            tags = {"booking", "get"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "401", description = "Should authorize", content = @Content),
+                    @ApiResponse(responseCode = "404", description = "Booking with this id not found", content = @Content)
+            }
+    )
+    @GetMapping("/{id}")
+    public ResponseEntity<BookingDto> getBooking(@PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(bookingService.getBooking(id, authentication.getName()));
     }
 
     @PostMapping
@@ -71,10 +82,18 @@ public class BookingController {
         return bookingService.addBooking(dto, username);
     }
 
+    @Operation(
+            summary = "Delete booking", description = "User can delete and cancel his booking",
+            tags = {"booking", "delete"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Booking deletion success"),
+                    @ApiResponse(responseCode = "404", description = "No booking with given id found", content = @Content),
+                    @ApiResponse(responseCode = "401", description = "Authorize before deleting booking", content = @Content)
+            }
+    )
     @DeleteMapping("/{id}")
-    @Hidden
-    public ResponseEntity<String> deleteBooking(@PathVariable Long id) {
-        bookingService.deleteBooking(id);
+    public ResponseEntity<String> deleteBooking(@PathVariable Long id, Authentication authentication) {
+        bookingService.deleteBooking(id, authentication.getName());
         return ResponseEntity.ok("Booking deleted");
     }
 }

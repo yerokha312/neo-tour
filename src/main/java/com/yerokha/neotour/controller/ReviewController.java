@@ -31,6 +31,16 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
 
+    @Operation(
+            summary = "Add new review", description = "Create a new review object by user",
+            tags = {"review", "post"},
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Successfully added a review"),
+                    @ApiResponse(responseCode = "401", description = "Not authorized", content = @Content),
+                    @ApiResponse(responseCode = "400", description = "Negative id or review body is too short or too long", content = @Content),
+                    @ApiResponse(responseCode = "404", description = "Tour not found", content = @Content)
+            }
+    )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<ReviewDto> addReview(@RequestBody CreateReviewDto dto,

@@ -1,6 +1,6 @@
 package com.yerokha.neotour.util;
 
-import com.yerokha.neotour.dto.BookingListDto;
+import com.yerokha.neotour.dto.BookingDto;
 import com.yerokha.neotour.dto.BookingResponse;
 import com.yerokha.neotour.entity.Booking;
 
@@ -20,8 +20,8 @@ public class BookingMapper {
         );
     }
 
-    public static BookingListDto toListDto(Booking booking) {
-        return new BookingListDto(
+    public static BookingDto toDto(Booking booking) {
+        return new BookingDto(
                 booking.getId(),
                 booking.getTour().getId(),
                 booking.getBookingDate(),
