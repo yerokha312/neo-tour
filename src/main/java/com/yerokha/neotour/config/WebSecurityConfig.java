@@ -61,7 +61,13 @@ public class WebSecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("https://neotour.netlify.app/");
+        config.addAllowedOrigin("http://neotour.netlify.app/");
+        config.addAllowedOrigin("https://*neotour.netlify.app/");
+        config.addAllowedOrigin("http://*neotour.netlify.app/");
+        config.addAllowedOrigin("https://master--neotour.netlify.app/");
+        config.addAllowedOrigin("http://master--neotour.netlify.app/");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
