@@ -1,6 +1,6 @@
 package com.yerokha.neotour.service;
 
-import com.yerokha.neotour.dto.BookingListDto;
+import com.yerokha.neotour.dto.BookingDto;
 import com.yerokha.neotour.dto.BookingRequest;
 import com.yerokha.neotour.dto.BookingResponse;
 import com.yerokha.neotour.entity.AppUser;
@@ -70,20 +70,29 @@ public class BookingService {
     private record Result(Tour tour, AppUser appUser) {
     }
 
-    public BookingResponse getBooking(Long id) {
-        return BookingMapper.toResponse(bookingRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("Booking not found")));
+    public BookingDto getBooking(Long id, String name) {
+        Booking booking = bookingRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Booking not found"));
+        authorizeRequest(name, booking);
+        return BookingMapper.toDto(booking);
     }
 
-    public Page<BookingListDto> getBookings(String username, int page, int size) {
+    public Page<BookingDto> getBookings(String username, int page, int size) {
         return bookingRepository.findAllByAppUser_Username(username, PageRequest.of(page, size))
-                .map(BookingMapper::toListDto);
+                .map(BookingMapper::toDto);
     }
 
-    public void deleteBooking(Long id) {
-        try {
-            bookingRepository.deleteById(id);
-        } catch (Exception e) {
+    public void deleteBooking(Long id, String name) {
+        Booking booking = bookingRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Booking not found"));
+        authorizeRequest(name, booking);
+        bookingRepository.deleteById(id);
+    }
+
+    private static void authorizeRequest(String name, Booking booking) {
+        String username = booking.getAppUser().getUsername();
+        String email = booking.getAppUser().getEmail();
+        if (!(Objects.equals(name, username) || Objects.equals(name, email))) {
             throw new NotFoundException("Booking not found");
         }
     }

@@ -47,8 +47,8 @@ public class UserController {
     )
     @PutMapping
     public UserProfile updateUserProfile(Authentication authentication,
-                                         @RequestPart @Valid String request,
+                                         @RequestPart @Valid String dto,
                                          @RequestPart(value = "image", required = false) MultipartFile image) {
-        return userService.updateUserProfile(authentication.getName(), request, image);
+        return userService.updateUserProfile(authentication.getName(), dto, image);
     }
 }
