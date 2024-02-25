@@ -43,7 +43,7 @@ public class UserMapper {
                 user.getBookings().stream()
                         .sorted(Comparator.comparing(Booking::getBookingDate).reversed())
                         .limit(3)
-                        .map(BookingMapper::toListDto)
+                        .map(BookingMapper::toDto)
                         .toList()
         );
     }

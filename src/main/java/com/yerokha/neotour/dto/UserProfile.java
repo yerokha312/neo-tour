@@ -19,6 +19,6 @@ public record UserProfile(
         @Pattern(regexp = "^\\+(?:[0-9] ?){6,14}[0-9]$", message = "Invalid phone number format")
         String phoneNumber,
         String imageUrl,
-        List<BookingListDto> bookings
+        List<BookingDto> bookings
 ) {
 }
