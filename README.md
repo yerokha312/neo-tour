@@ -44,7 +44,7 @@ Requirements to run this project:
 ### Installation
 
 To install the application you need:
-1. run `git clone https://github.com/yerokha312/beernest-spring.git`
+1. run `git clone https://github.com/yerokha312/neo-tour.git`
 2. `cd neo-tour`
 3. run maven command `mvn clean install`, if you have maven installed locally. Or `./mvnw clean install` if you have no maven installed.
 
@@ -81,6 +81,7 @@ Please go to http://neotour.netlify.app/ and test the site made in cooperation w
 ### Authors
 
 [Yerbolat Yergaliyev](https://github.com/yerokha312)
+
 [Adilet Pranov](https://github.com/PranovAdilet)
 
 ### Contact
