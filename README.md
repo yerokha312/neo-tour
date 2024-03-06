@@ -40,6 +40,7 @@ Requirements to run this project:
 * Maven 3.5+
 * Spring Boot 3.2+
 * PostgreSQL 15+
+* Cloudinary
 
 ### Installation
 
