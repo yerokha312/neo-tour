@@ -85,9 +85,10 @@ public class WebSecurityConfig {
                         .requestMatchers("/v1/registration", "/v1/login").anonymous()
                         .requestMatchers(GET, "/**").permitAll()
                         .requestMatchers(POST, "/v1/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(POST, "v1/tours").hasRole("ADMIN")
-                        .requestMatchers("v1/bookings**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("v1/users").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(POST, "/v1/tours").hasRole("ADMIN")
+                        .requestMatchers("/v1/bookings**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/v1/users").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(POST, "/v1/reviews").hasAnyRole("USER", "ADMIN")
                         .anyRequest().hasRole("ADMIN"))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(converter())))
